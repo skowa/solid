@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SolidWorkshop.DataProviders;
+using SolidWorkshop.Entities;
 
 namespace SolidWorkshop
 {
-    public class Service
+    public class EntityService : IService<Entity>
     {
-        private const string _connectionString = "[connectionString]";
-        protected readonly SqlConnection _sqlConnection;
+        private readonly IDataProvider<Entity> _dataProvider;
 
-        public Service()
+        public EntityService(IDataProvider<Entity> dataProvider)
         {
-            //_sqlConnection = new SqlConnection(_connectionString);
+            _dataProvider = dataProvider ?? throw new ArgumentNullException($"{nameof(dataProvider)} is null");
         }
 
         public Entity Save(Entity entity)
@@ -25,9 +22,7 @@ namespace SolidWorkshop
                 {
                     try
                     {
-                        _sqlConnection.Open();
-                        //perform Save
-                        _sqlConnection.Close();
+                        _dataProvider.Save(entity);
                         return entity;
                     }
                     catch
@@ -44,13 +39,6 @@ namespace SolidWorkshop
             }
         }
 
-        public List<Entity> ReadAll()
-        {
-            _sqlConnection.Open();
-            //perform Save
-            _sqlConnection.Close();
-            return new List<Entity>();
-        }
-
+        public List<Entity> ReadAll() => _dataProvider.GetAll();
     }
 }
